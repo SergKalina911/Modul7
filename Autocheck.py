@@ -136,3 +136,55 @@ class Point:
 point = Point(5, 10)
 print(point.x)  # 5
 print(point.y)  # 10
+
+"""                                     Автопроверка 3 
+
+                        Теория к авточек 3
+                        
+Рассмотрим следующую ситуацию: у нас есть Person класс, обладающий name свойством."""
+
+class Person:
+    def __init__(self, name):
+        self.__name = name
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if (type(name) == str) and (len(name) > 0):
+            self.__name = name
+
+
+person = Person(123)
+print(person.name)  # 123
+
+""" В этом коде может быть ошибка. В setter мы проверяем, является ли значение строкой, и ожидаем только строку ненулевой 
+длины. Однако при инициализации значения в конструкторе, когда мы присваиваем self.__name=name, мы фактически 
+игнорируем setter и присваиваем значение напрямую. Именно это и произошло в нашем коде — __name свойство содержит 
+числовое значение.
+
+Чтобы этого не произошло, необходимо переписать код следующим образом:"""
+
+class Person:
+    def __init__(self, name):
+        self.__name = None
+        self.name = name
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if (type(name) == str) and (len(name) > 0):
+            self.__name = name
+
+
+person = Person(123)
+print(person.name)  # None
+
+""" Теперь в конструкторе мы присваиваем значение None полю  __name: self.__name=None. Во второй строке конструктора 
+мы вызываем оператор setterс self.name=name оператором . В этом случае setter выполняется оператор , который 
+предотвращает присвоение недопустимого значения 123 полю __name при создании экземпляра класса person = Person(123)."""
