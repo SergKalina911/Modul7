@@ -420,4 +420,278 @@ def __getitem__(self, index):
         print(f"Accessing item at index {index}")
         # Викликати оригінальний метод __getitem__
         return super().__getitem__(index)  
-"""
+
+
+                        Перевизначення математичних операторів
+                        
+Перевизначення математичних операторів в Python дозволяє класам змінювати стандартну поведінку арифметичних операцій. 
+Це відомо як перевантаження операторів (https://uk.wikipedia.org/wiki/%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%B0%D0%BD%D1%82%D0%B0%D0%B6%D0%B5%D0%BD%D0%BD%D1%8F_%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%D1%96%D0%B2). 
+Використовуючи спеціальні методи, ви можете визначити або перевизначити поведінку операторів, таких як +, -, *, /, 
+і багатьох інших для об'єктів ваших класів.
+
+Ось деякі з найпоширеніших спеціальних методів для перевизначення математичних операторів:
+__add__(self, other) для оператора +
+__sub__(self, other) для оператора -
+__mul__(self, other) для оператора *
+__truediv__(self, other) для оператора /
+__floordiv__(self, other) для оператора цілочисельного ділення //
+__mod__(self, other) для оператора залишку від ділення %
+__pow__(self, other) для оператора * піднесення до степеня
+
+Перевизначення математичних операторів може стати зручним інструментом. Наприклад, створимо клас словників, які 
+підтримують операції додавання та віднімання:"""
+
+from collections import UserDict
+
+class MyDict(UserDict):
+    def __add__(self, other):
+        temp_dict = self.data.copy()
+        temp_dict.update(other)
+        return MyDict(temp_dict)
+
+    def __sub__(self, other):
+        temp_dict = self.data.copy()
+        for key in other:
+            if key in temp_dict:
+                temp_dict.pop(key)
+        return MyDict(temp_dict)
+
+if __name__ == '__main__':
+    d1 = MyDict({1: 'a', 2: 'b'})
+    d2 = MyDict({3: 'c', 4: 'd'})
+
+    d3 = d1 + d2
+    print(d3)
+
+    d4 = d3 - d2
+    print(d4)
+# Виведення:
+# {1: 'a', 2: 'b', 3: 'c', 4: 'd'}
+# {1: 'a', 2: 'b'}
+
+""" Синтаксис простий і код досить виразний.
+
+Метод __add__ визначає поведінку для оператора +. Він дозволяє об'єднувати два об'єкти класу MyDict, додаючи 
+всі елементи з другого словника other до першого (self). Спочатку створюється копія внутрішнього словника self.data, 
+щоб уникнути зміни оригінального словника. До тимчасового словника додаються всі елементи з другого словника. 
+Якщо ключі вже існують, їх значення будуть оновлені на значення з other. Магічний метод повертає новий екземпляр 
+MyDict, ініціалізований з об'єднаного словника.
+
+Метод __sub__ визначає поведінку для оператора -. Він дозволяє видаляти ключі з першого словника self, які присутні 
+в другому other. Аналогічно методу __add__, спочатку створюється копія внутрішнього словника temp_dict. Далі цикл 
+for перебирає всі ключі в другому словнику other. Умова if key in temp_dict перевіряє, чи присутній ключ у словнику 
+temp_dict. Якщо так то видаляємо ключ і його значення з тимчасового словника, якщо такий ключ існує. Повертаємо новий 
+екземпляр MyDict, ініціалізований після видалення ключів.
+
+Розглянемо ще один приклад та створимо клас ComplexNumber для представлення комплексних чисел, з перевизначенням 
+деяких арифметичних операторів:"""
+class ComplexNumber:
+    def __init__(self, real, imag):
+        self.real = real
+        self.imag = imag
+
+    def __add__(self, other):
+        return ComplexNumber(self.real + other.real, self.imag + other.imag)
+
+    def __sub__(self, other):
+        return ComplexNumber(self.real - other.real, self.imag - other.imag)
+
+    def __mul__(self, other):
+        real_part = self.real * other.real - self.imag * other.imag
+        imag_part = self.real * other.imag + self.imag * other.real
+        return ComplexNumber(real_part, imag_part)
+
+    def __str__(self):
+        return f"{self.real} + {self.imag}i"
+
+if __name__ == "__main__":
+    num1 = ComplexNumber(1, 2)
+    num2 = ComplexNumber(3, 4)
+    print(f"Сума: {num1 + num2}")
+    print(f"Різниця: {num1 - num2}")
+    print(f"Добуток: {num1 * num2}")
+
+# Виведення:
+# Сума: 4 + 6i
+# Різниця: -2 + -2i
+# Добуток: -5 + 10i
+
+""" Наш приклад показує, як можна перевизначити арифметичні оператори для реалізації додавання, віднімання та 
+множення комплексних чисел. Використання спеціальних методів робить можливим використання звичних математичних 
+операторів з об'єктами, створюючи читабельний і інтуїтивно зрозумілий інтерфейс.
+
+Перевизначення математичних операторів надає значні можливості для створення виразних і потужних абстракцій, що 
+здатні імітувати поведінку вбудованих типів Python або створювати нові способи взаємодії з об'єктами ваших класів. 
+Для прикладу реалізуємо векторне множення, де результатом є скалярний добуток векторів."""
+
+from collections import UserList
+
+class MulArray(UserList):
+    def __init__(self, *args):
+        self.data = list(args)
+
+    def __mul__(self, other):
+        return self.__scalar_mul(other)
+    
+    def __rmul__(self, other):
+        return self.__scalar_mul(other) 
+    
+    def __scalar_mul(self, other):
+        result = 0
+        for i in range(min(len(self.data), len(other))):
+            result += self.data[i] * other[i]
+        return result
+
+if __name__ == '__main__':
+    vec1 = MulArray(1, 2, 3)
+    vec2 = MulArray(3, 4, 5)
+
+    print(vec1 * vec2)
+    print(vec1 * [1, 2, 3])
+    print([1, 1, 1] * vec2)
+
+# Виведення:
+# 26
+# 14
+# 12"""
+
+""" Магічний метод __mul__ визначає поведінку операції множення * між екземпляром MulArray і іншим об'єктом. 
+Він виконує скалярний добуток між self.data і другим списком, обмежуючи множення мінімальною довжиною обох списків. 
+Результатом є сума добутків відповідних елементів списків. Тут в нас з'явився новий магічний метод __rmul__ який 
+визначає поведінку операції множення, коли екземпляр MulArray знаходиться справа від оператора множення. Це з
+абезпечує комутативність операції множення, дозволяючи виконувати множення з обох боків. Він необхідний, щоб ми 
+могли виконати операцію [1, 1, 1] * vec2, коли екземпляр MulArray знаходиться справа від оператора множення. 
+Реалізація ідентична до __mul__, тому результат буде таким же.
+
+
+                        Перевизначення операцій порівняння
+
+
+Перевизначення операцій порівняння в Python дозволяє об'єктам ваших класів взаємодіяти з операторами порівняння 
+(<, <=, >, >=, ==, !=), щоб вказати, як саме об'єкти повинні бути порівнювані між собою. Це досягається за допомогою 
+реалізації спеціальних методів у вашому класі.
+
+Тому операції порівняння, як і інші оператори, мають свої "магічні" методи:
+__eq__(self, other) — визначає поведінку під час перевірки на відповідність (==).
+__ne__(self, other) — визначає поведінку під час перевірки на невідповідність. !=.
+__lt__(self, other) — визначає поведінку під час перевірки на менше <.
+__gt__(self, other) — визначає поведінку під час перевірки на більше >.
+__le__(self, other) — визначає поведінку під час перевірки на менше-дорівнює <=.
+__ge__(self, other) — визначає поведінку під час перевірки на більше-дорівнює >=.
+
+Якщо нам потрібно, щоб об'єкт був порівнянний, ми можемо реалізувати ці шість методів і тоді будь-яка перевірка на 
+порівняння працюватиме.
+
+Розглянемо клас Rectangle, який представляє прямокутник з двома властивостями: шириною width і висотою height. Ми 
+хочемо порівнювати прямокутники на основі розміру їх площі."""
+class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+    def __eq__(self, other):
+        if not isinstance(other, Rectangle):
+            return NotImplemented
+        return self.area() == other.area()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __lt__(self, other):
+        if not isinstance(other, Rectangle):
+            return NotImplemented
+        return self.area() < other.area()
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __gt__(self, other):
+        if not isinstance(other, Rectangle):
+            return NotImplemented
+        return self.area() > other.area()
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
+
+if __name__ == "__main__":
+    rect1 = Rectangle(5, 10)
+    rect2 = Rectangle(3, 20)
+    rect3 = Rectangle(5, 10)
+    print(f"Площа прямокутників: {rect1.area()}, {rect2.area()}, {rect3.area()}")
+    print(rect1 == rect3)  # True: площі рівні
+    print(rect1 != rect2)  # True: площі не рівні
+    print(rect1 < rect2)  # True: площа rect1  менша, ніж у rect2
+    print(rect1 <= rect3)  # True: площі рівні, тому rect1 <= rect3
+    print(rect1 > rect2)  # False: площа rect1 менша, ніж у rect2
+    print(rect1 >= rect3)  # True: площі рівні, тому rect1 >= rect3
+
+# Виведення:
+# Площа прямокутників: 50, 60, 50
+# True
+# True
+# True
+# True
+# False
+# True
+
+""" Кожен з методів порівняння спирається на площу прямокутника як критерій порівняння. Метод __eq__ перевіряє 
+рівність площ, а методи __lt__ та __gt__ порівнюють, чи менша або більша площа одного прямокутника за площу іншого. 
+Інші методи будуються на цих базових порівняннях, забезпечуючи повний набір операцій порівняння.
+
+Використання NotImplemented в методах порівняння є прийнятою і рекомендованою практикою, коли ви стикаєтеся з ситуацією, 
+де ваш метод не знає, як порівнювати об'єкт з іншим типом об'єкта. Коли метод порівняння повертає NotImplemented, Python 
+розуміє, що поточний метод не може виконати порівняння і спробує знайти інший спосіб порівняння, наприклад, викликавши 
+відповідний метод у другого об'єкта або вдаючись до інших механізмів порівняння. Якщо жоден метод не може порівняти 
+об'єкти, тоді інтерпретатор викине виключення TypeError. Наприклад операція порівняння rect1 > 10 призведе до TypeError: 
+'>' not supported between instances of 'Rectangle' and 'int' .
+
+Реалізуємо клас Point, який представляє точку в двовимірному просторі з координатами x та y. Основна мета прикладу 
+показати можливість порівнювати точки за їхніми координатами за допомогою стандартних операторів 
+порівняння (==, !=, <, >, <=, >=)."""
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __eq__(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return self.x == other.x and self.y == other.y
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __lt__(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return self.x < other.x and self.y < other.y
+
+    def __gt__(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return self.x > other.x and self.y > other.y
+
+    def __le__(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return self.x <= other.x and self.y <= other.y
+
+    def __ge__(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return self.x >= other.x and self.y >= other.y
+
+if __name__ == "__main__":
+    print(Point(0, 0) == Point(0, 0))  # True
+    print(Point(0, 0) != Point(0, 0))  # False
+    print(Point(0, 0) < Point(1, 0))  # False
+    print(Point(0, 0) > Point(0, 1))  # False
+    print(Point(0, 2) >= Point(0, 1))  # True
+    print(Point(0, 0) <= Point(0, 0))  # True
+
+""" Наш приклад демонструє, як клас може інтуїтивно інтегруватися з Python операторами порівняння, роблячи код, 
+який використовує ці об'єкти, більш читабельним і природним."""
+
