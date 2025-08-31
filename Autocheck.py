@@ -187,4 +187,48 @@ print(person.name)  # None
 
 """ Теперь в конструкторе мы присваиваем значение None полю  __name: self.__name=None. Во второй строке конструктора 
 мы вызываем оператор setterс self.name=name оператором . В этом случае setter выполняется оператор , который 
-предотвращает присвоение недопустимого значения 123 полю __name при создании экземпляра класса person = Person(123)."""
+предотвращает присвоение недопустимого значения 123 полю __name при создании экземпляра класса person = Person(123).
+
+3. В Pointк лассе добавьте проверку введённого значения в setter механизм свойств x и y. Разрешите устанавливать 
+свойства x и y для экземпляра класса только в том случае, если они имеют числовое значение (int или float).
+
+Пример:
+
+point = Point("a", 10)
+
+print(point.x)  # None
+print(point.y)  # 10"""
+class Point:
+    def __init__(self, x, y):
+        self.__x = None
+        self.__y = None
+        self.x = x
+        self.y = y
+
+    @property
+    def x(self):
+        return self.__x
+
+    @x.setter
+    def x(self, x):
+        if (type(x) == int) or (type(x) == float):
+            self.__x = x
+        else:
+            print('Only numbers accepted')
+        
+            
+
+    @property
+    def y(self):
+        return self.__y
+
+    @y.setter
+    def y(self, y):
+        if (type(y) == int) or (type(y) == float):
+            self.__y = y
+        else:
+            print('Only numbers accepted')
+point = Point("a", 10)
+print(point.x)  # None
+print(point.y)  # 10
+
