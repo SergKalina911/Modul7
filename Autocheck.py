@@ -875,3 +875,50 @@ vector1 = Vector(Point(1, 10))
 vector2 = Vector(Point(10, 10))
 print(vector1.len())  # 10.04987562112089
 print(vector2.len())  # 14.142135623730951
+
+"""                                     Автопрверка 10
+
+                        Теория к авточек 10
+                        
+Операции сравнения, как и другие операции, имеют свои «магические» методы:
+
+__eq__(self, other)определяет поведение во время проверки соответствия — ( ==).
+__ne__(self, other)определяет поведение во время проверки на несоответствие — ( !=).
+__lt__(self, other)определяет поведение при проверке на уменьшающийся фактор — ( <)
+__gt__(self, other)определяет поведение во время проверки на большее ( >)
+__le__(self, other)определяет поведение во время теста «меньше, чем равно» ( <=)
+__ge__(self, other)определяет поведение во время теста «больше, чем равно» ( >=)
+Если вам необходимо, чтобы ваш объект был сравнимым, вы можете реализовать эти шесть методов, и тогда любая 
+проверка сравнения будет работать:"""
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __ne__(self, other):
+        return self.x != other.x or self.y != other.y
+
+    def __lt__(self, other):
+        return self.x < other.x and self.y < other.y
+
+    def __gt__(self, other):
+        return self.x > other.x and self.y > other.y
+
+    def __le__(self, other):
+        return self.x <= other.x and self.y <= other.y
+
+    def __ge__(self, other):
+        return self.x >= other.x and self.y >= other.y
+
+
+Point(0, 0) == Point(0, 0)  # True
+Point(0, 0) != Point(0, 0)  # False
+Point(0, 0) < Point(1, 0)  # False
+Point(0, 0) > Point(0, 1)  # False
+Point(0, 2) >= Point(0, 1)  # True
+Point(0, 0) <= Point(0, 0)  # True
+
