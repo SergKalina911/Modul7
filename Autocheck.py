@@ -461,3 +461,30 @@ point = Point(1, 10)
 vector = Vector(point)
 print(point)  # Point(1,10)
 print(vector)  # Vector(1,10)
+
+"""                                     Автопроверка 6
+                        
+                        Теория к авточек 6 
+
+Функторы — это объекты, которые ведут себя как функции в том смысле, что их можно вызывать и передавать им 
+аргументы. Функция в Python — это тот же объект, но реализующий __call__ метод, который отвечает за синтаксис 
+вызова в скобках."""
+class Adder:
+    def __init__(self, add_value):
+        self.add_value = add_value
+
+    def __call__(self, value):
+        return self.add_value + value
+
+
+two_adder = Adder(2)
+print(two_adder(5))  # 7
+print(two_adder(4))  # 6
+
+three_adder = Adder(3)
+print(three_adder(5))  # 8
+print(three_adder(4))  # 7
+
+""" В этом примере мы создали Adderкласс с методом __call__. Теперь объекты этого класса можно вызывать как функции, 
+передавая им аргументы. Эти вызовы будут вызывать __call__метод для объектов класса Adder.
+"""
