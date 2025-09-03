@@ -1094,4 +1094,178 @@ __next__ метод (как и на предыдущем шаге), а резу�
 необходимости завершить итерацию, и итерация в for цикле прекращается. __next__ Метод больше не будет вызываться 
 для данного экземпляра итератора, и управление передаётся на строку, следующую за итерацией. В нашем случае речь 
 идёт о строке после тела цикла for.
-"""
+
+
+11. Вам необходимо реализовать RandomVectors класс, который может создавать итерируемый объект и разрешать 
+итерацию по случайным векторам.
+
+Формат занятия:
+
+RandomVectors(max_vectors: int, max_points: int) -> Iterable(max_vectors, max_points)
+где:
+
+- max_vectors определяет максимальное количество элементов (экземпляров класса Vector) в итеративной 
+последовательности.
+- max_points определяет максимальное значение для координат x и y(в диапазоне 0...max_points)
+
+Чтобы экземпляры класса RandomVectors были итерируемыми объектами, класс должен реализовать __iter__ метод, 
+возвращающий итератор. Итератором называется любой объект, который на каждом шаге итерации (шаг итерации — это 
+вызов метода next() для данного итератора) возвращает следующее значение — и так далее, пока не будет исчерпано 
+количество итераций (определяемое параметром max_vectors).
+
+В нашем случае Iterable класс будет итератором, в котором нужно реализовать __next__ метод. В своём конструкторе 
+он получает те же параметры max_vectors и , что и класс.max_pointsRandomVectors
+
+Метод __next__ должен возвращать каждое последующее значение из списка. В конструкторе с помощью 
+self.vectors нужно создать набор случайных чисел self.vectors заданной длины . Атрибут — это указатель на текущий 
+вектор из списка, необходимый для итерации. max_vectors randrange current_index vectors
+
+Пример класса RandomVectors:
+
+vectors = RandomVectors(5, 10)
+
+for vector in vectors:
+    print(vector)
+Вывод должен выглядеть так:
+
+Vector(7,7)
+Vector(0,0)
+Vector(8,9)
+Vector(1,9)
+Vector(6,6)
+
+Давайте подробно изложим нашу задачу:
+
+1. Класс RandomVectors должен иметь __iter__ метод, который должен возвращать объект итератора (класс Iterable).
+2. Объект итератора (экземпляр класса Iterable) должен иметь __next__ метод.
+3. Метод __next__ отслеживает количество возможных шагов итерации, определяемых параметром max_vectors.
+4. Если мы исключили возможные шаги, то __next__ метод выдает StopIteration исключение.
+5. В противном случае __next__ метод возвращает вектор со случайными координатами (экземпляр класса Vector). 
+Размер вектора определяется параметром max_points."""
+
+from random import randrange
+
+
+class Point:
+    def __init__(self, x, y):
+        self.__x = None
+        self.__y = None
+        self.x = x
+        self.y = y
+
+    @property
+    def x(self):
+        return self.__x
+
+    @x.setter
+    def x(self, x):
+        if (type(x) == int) or (type(x) == float):
+            self.__x = x
+
+    @property
+    def y(self):
+        return self.__y
+
+    @y.setter
+    def y(self, y):
+        if (type(y) == int) or (type(y) == float):
+            self.__y = y
+
+    def __str__(self):
+        return f"Point({self.x},{self.y})"
+
+
+class Vector:
+    def __init__(self, coordinates: Point):
+        self.coordinates = coordinates
+
+    def __setitem__(self, index, value):
+        if index == 0:
+            self.coordinates.x = value
+        if index == 1:
+            self.coordinates.y = value
+
+    def __getitem__(self, index):
+        if index == 0:
+            return self.coordinates.x
+        if index == 1:
+            return self.coordinates.y
+
+    def __call__(self, value=None):
+        if value:
+            self.coordinates.x = self.coordinates.x * value
+            self.coordinates.y = self.coordinates.y * value
+        return self.coordinates.x, self.coordinates.y
+
+    def __add__(self, vector):
+        x = self.coordinates.x + vector.coordinates.x
+        y = self.coordinates.y + vector.coordinates.y
+        return Vector(Point(x, y))
+
+    def __sub__(self, vector):
+        x = self.coordinates.x - vector.coordinates.x
+        y = self.coordinates.y - vector.coordinates.y
+        return Vector(Point(x, y))
+
+    def __mul__(self, vector):
+        return (
+                self.coordinates.x * vector.coordinates.x
+                + self.coordinates.y * vector.coordinates.y
+        )
+
+    def len(self):
+        return (self.coordinates.x ** 2 + self.coordinates.y ** 2) ** 0.5
+
+    def __str__(self):
+        return f"Vector({self.coordinates.x},{self.coordinates.y})"
+
+    def __eq__(self, vector):
+        return self.len() == vector.len()
+
+    def __ne__(self, vector):
+        return self.len() != vector.len()
+
+    def __lt__(self, vector):
+        return self.len() < vector.len()
+
+    def __gt__(self, vector):
+        return self.len() > vector.len()
+
+    def __le__(self, vector):
+        return self.len() <= vector.len()
+
+    def __ge__(self, vector):
+        return self.len() >= vector.len()
+
+
+class Iterable:
+    def __init__(self, max_vectors, max_points):
+        self.current_index = 0
+        self.vectors = []
+        for _ in range(max_vectors):
+            x = randrange(0, max_points)
+            y = randrange(0, max_points)
+            self.vectors.append(Vector(Point(x, y)))        
+    
+    def __iter__(self):
+        return self
+            
+    def __next__(self):
+        if self.current_index < len(self.vectors):
+            vector = self.vectors[self.current_index]
+            self.current_index += 1
+            return vector
+        raise StopIteration
+    
+class RandomVectors:
+    def __init__(self, max_vectors=10, max_points=50):
+        self.max_vectors = max_vectors
+        self.max_points = max_points
+        
+    def __iter__(self):
+        return Iterable(self.max_vectors, self.max_points)
+
+vectors = RandomVectors(5, 10)
+for vector in vectors:
+    print(vector)
+        
